@@ -57,7 +57,6 @@ int main()
     }
 
     // Cleanup
-    glfwDestroyWindow(window);
     glfwTerminate();
 
     return 0;

@@ -70,6 +70,7 @@ The parameters for glViewport(GLint x, GLint y, GLsizei width, GLsizei height) a
 > Note that the y coordinates start at the bottom of the viewport. If y = 0, its at the bottom of the viewport.
 
 ### Main loop
+Following all the setup, the main loop for the rendering is set in place.
 ```c++
 while (!glfwWindowShouldClose(window))
     {
@@ -84,3 +85,22 @@ while (!glfwWindowShouldClose(window))
         glfwPollEvents();
     }
 ```
+The first thing we need to process inside the main loop is the input. In this case, we dont have any input yet.
+
+Next we do the actual rendering. In this code we only have the basic, which is **glClearColor** and **glClear**. **glClearColor** sets the color value that OpenGL uses to reset the colorbuffer. As soon as **glClear** or **glClearBuffer** are called, it uses the value already set to reset the color value. **glClear** clears the entire buffer of the current framebuffer. When specifying the **GL_COLOR_BUFFER_BIT** the buffer is cleared to the color as specified before. Others bits to set are **GL_DEPTH_BUFFER_BIT** and **GL_STENCIL_BUFFER_BIT** clear the depth buffer and the stencil buffer respectivly
+
+Then, we need to swap the buffer with **glfwSwapBuffers** and get all the events with **glfwPollEvents**. 
+
+The **glfwPollEvents** function checks if any events are triggered (like keyboard input or mouse movement events), updates the window state and calls the corresponding functions (which can be registered via callback methods).
+
+The **glfwSwapBuffers** function will swap the color buffer (a large 2D buffer that contains color values for each pixel in GLFW's window) that is used to render to during this render iteration and show it as output to the screen. 
+
+> Double buffer
+When an application draws in a single buffer the resulting image may display flickering issues. This is because the resulting output image is not drawn in an instant, but drawn pixel by pixel and usually from left to right and top to bottom. Because this image is not displayed at an instant to the user while still being rendered to, the result may contain artifacts. To circumvent these issues, windowing applications apply a double buffer for rendering. The front buffer contains the final output image that is shown at the screen, while all the rendering commands draw to the back buffer. As soon as all the rendering commands are finished we swap the back buffer to the front buffer so the image can be displayed without still being rendered to, removing all the aforementioned artifacts. 
+
+### Cleanup
+This section is to delete all allocated resources before closing the application.
+```c++
+glfwTerminate();
+```
+The **glfwTerminate** function destroys all remaining windows and frees all remaining resources allocated.
