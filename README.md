@@ -87,7 +87,7 @@ while (!glfwWindowShouldClose(window))
 ```
 The first thing we need to process inside the main loop is the input. In this case, we dont have any input yet.
 
-Next we do the actual rendering. In this code we only have the basic, which is **glClearColor** and **glClear**. **glClearColor** sets the color value that OpenGL uses to reset the colorbuffer. As soon as **glClear** or **glClearBuffer** are called, it uses the value already set to reset the color value. **glClear** clears the entire buffer of the current framebuffer. When specifying the **GL_COLOR_BUFFER_BIT** the buffer is cleared to the color as specified before. Others bits to set are **GL_DEPTH_BUFFER_BIT** and **GL_STENCIL_BUFFER_BIT** clear the depth buffer and the stencil buffer respectively
+Next we do the actual rendering. In this code we only have the basic, which is **glClearColor** and **glClear**. **glClearColor** sets the color value that OpenGL uses to reset the colorbuffer. This color values are set in RGBA format. As soon as **glClear** or **glClearBuffer** are called, it uses the value already set to reset the color value. **glClear** clears the entire buffer of the current framebuffer. When specifying the **GL_COLOR_BUFFER_BIT** the buffer is cleared to the color as specified before. Others bits to set are **GL_DEPTH_BUFFER_BIT** and **GL_STENCIL_BUFFER_BIT** clear the depth buffer and the stencil buffer respectively
 
 Then, we need to swap the buffer with **glfwSwapBuffers** and get all the events with **glfwPollEvents**. 
 
