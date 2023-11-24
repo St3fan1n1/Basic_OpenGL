@@ -92,8 +92,10 @@ int main()
 
     /* Start creating the vertex shader */
     ShaderProgramSource source = GetShaderSource("./resources/shaders/basic.shader");
+    ShaderProgramSource source2 = GetShaderSource("./resources/shaders/basic2.shader");
     
     unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
+    unsigned int shader2 = CreateShader(source2.VertexSource, source2.FragmentSource);
 
     /* Main loop */
     while (!glfwWindowShouldClose(window))
@@ -108,6 +110,7 @@ int main()
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
+        glUseProgram(shader2);
         glBindVertexArray(VAO2);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
