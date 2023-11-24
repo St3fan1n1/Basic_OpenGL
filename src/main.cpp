@@ -58,27 +58,34 @@ int main()
     // Vertex data
     float vertices[6] = 
     {
-        -0.5f,  -0.5f,
-        0.0f, 0.5f,
-        0.5f, -0.5f,
+        -0.75f,  -0.5f,
+        -0.5f,    0.0f,
+        -0.25f,  -0.5f,
     };
 
-    unsigned int indices[] = 
-    { 
-        0, 1, 2
+    float vertices2[6] = 
+    {
+        0.75f,  0.5f,
+        0.5f,   0.0f,
+        0.25f,  0.5f,
     };
 
-    unsigned int VBO, VAO, EBO;
+    unsigned int VBO, VAO, VBO2, VAO2;
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &EBO);
+    glGenBuffers(1, &VBO2);
     glGenVertexArrays(1, &VAO);
+    glGenVertexArrays(1, &VAO2);
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glEnableVertexAttribArray(0);
+
+    glBindVertexArray(VAO2);
+    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
+    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
 
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
@@ -87,9 +94,6 @@ int main()
     ShaderProgramSource source = GetShaderSource("./resources/shaders/basic.shader");
     
     unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
 
     /* Main loop */
     while (!glfwWindowShouldClose(window))
@@ -102,7 +106,11 @@ int main()
 
         glUseProgram(shader);
         glBindVertexArray(VAO);
-        glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
+        glBindVertexArray(VAO2);
+        glDrawArrays(GL_TRIANGLES, 0, 3);
+
         glBindVertexArray(0);
 
         // Call events and swap buffer
