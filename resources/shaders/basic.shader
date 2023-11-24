@@ -4,7 +4,7 @@
 
     void main()
     {
-       gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);
+       gl_Position = vec4(aPos.x, aPos.y, 0.0, 1.0);
     };
 
 #shader fragment
@@ -13,5 +13,5 @@
 
     void main()
     {
-       FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);
+       FragColor = vec4(0.716f, 0.076f, 0.072f, 1.0f);
     };
