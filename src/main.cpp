@@ -2,9 +2,18 @@
 #include <GLFW/glfw3.h>
 
 #include <iostream>
+#include <fstream>
 #include <string>
+#include <sstream>
+
+struct ShaderProgramSource
+{
+    std::string VertexSource;
+    std::string FragmentSource;
+};
 
 void framebuffer_size_callback(GLFWwindow* window, int width, int height);
+ShaderProgramSource GetShaderSource(const std::string& filepath);
 
 const char *vertexShaderSource = "#version 330 core\n"
     "layout (location = 0) in vec3 aPos;\n"
@@ -57,7 +66,7 @@ int main()
         return -1;
     }
 
-    // vertex data
+    // Vertex data
     float vertices[] = 
     {
         0.5f,  0.5f, 0.0f,  // top right
@@ -67,25 +76,10 @@ int main()
     };
 
     unsigned int indices[] = 
-    {  // note that we start from 0!
+    { 
         0, 1, 3,   // first triangle
         1, 2, 3    // second triangle
     };
-
-
-// _____________________________________________________________________________________________
-// // ..:: Initialization code :: ..
-// // 1. bind Vertex Array Object
-// glBindVertexArray(VAO);
-// // 2. copy our vertices array in a vertex buffer for OpenGL to use
-// glBindBuffer(GL_ARRAY_BUFFER, VBO);
-// glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
-// // 3. copy our index array in a element buffer for OpenGL to use
-// glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
-// glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-// // 4. then set the vertex attributes pointers
-// glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
-// glEnableVertexAttribArray(0); 
 
     // Create VBO. Buffer with all the vertices to later send to the gpu.
     unsigned int VBO, VAO, EBO;
@@ -104,6 +98,10 @@ int main()
     glEnableVertexAttribArray(0);
 
     // Start creating the vertex shader
+    ShaderProgramSource source = GetShaderSource("./resources/shaders/basic.shader");
+    std::cout << source.VertexSource << std::endl;
+    std::cout << source.FragmentSource << std::endl;
+
     unsigned int vertexShader;
     vertexShader = glCreateShader(GL_VERTEX_SHADER);
     glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
@@ -173,6 +171,7 @@ int main()
     }
 
     // Cleanup
+    glDeleteProgram(shaderProgram);
     glfwTerminate();
 
     return 0;
@@ -181,4 +180,39 @@ int main()
 void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 {
     glViewport(0, 0, width, height);
+}
+
+ShaderProgramSource GetShaderSource(const std::string& filepath)
+{
+    std::ifstream stream(filepath);
+
+    enum class ShaderType
+    {
+        NONE = -1, VERTEX = 0, FRAGMENT = 1
+    };
+
+    std::string line;
+    std::stringstream ss[2];
+    ShaderType type = ShaderType::NONE;
+    while (getline(stream, line))
+    {
+        std::cout << "Line: " << line << std::endl;
+        if (line.find("#shader") != std::string::npos)
+        {
+            if (line.find("vertex") != std::string::npos)
+            {
+                type = ShaderType::VERTEX;
+            }
+            else if (line.find("fragment") != std::string::npos)
+            {
+                type = ShaderType::FRAGMENT;
+            }
+        }
+        else
+        {
+            ss[(int)type] << line << "\n";
+        }
+    }
+
+    return { ss[0].str(), ss[1].str()};
 }
