@@ -58,23 +58,14 @@ int main()
     // Vertex data
     float vertices[6] = 
     {
-        -0.75f,  -0.5f,
-        -0.5f,    0.0f,
-        -0.25f,  -0.5f,
+        -0.5f, -0.5f,
+         0.5f, -0.5f,
+         0.0f, 0.5f,
     };
 
-    float vertices2[6] = 
-    {
-        0.75f,  0.5f,
-        0.5f,   0.0f,
-        0.25f,  0.5f,
-    };
-
-    unsigned int VBO, VAO, VBO2, VAO2;
+    unsigned int VBO, VAO;
     glGenBuffers(1, &VBO);
-    glGenBuffers(1, &VBO2);
     glGenVertexArrays(1, &VAO);
-    glGenVertexArrays(1, &VAO2);
 
     glBindVertexArray(VAO);
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
@@ -83,19 +74,10 @@ int main()
     glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
-    glBindVertexArray(VAO2);
-    glBindBuffer(GL_ARRAY_BUFFER, VBO2);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices2), vertices2, GL_STATIC_DRAW);
-
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
-
     /* Start creating the vertex shader */
     ShaderProgramSource source = GetShaderSource("./resources/shaders/basic.shader");
-    ShaderProgramSource source2 = GetShaderSource("./resources/shaders/basic2.shader");
     
     unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
-    unsigned int shader2 = CreateShader(source2.VertexSource, source2.FragmentSource);
 
     /* Main loop */
     while (!glfwWindowShouldClose(window))
@@ -108,10 +90,6 @@ int main()
 
         glUseProgram(shader);
         glBindVertexArray(VAO);
-        glDrawArrays(GL_TRIANGLES, 0, 3);
-
-        glUseProgram(shader2);
-        glBindVertexArray(VAO2);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
         glBindVertexArray(0);
