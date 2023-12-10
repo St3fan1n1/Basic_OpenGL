@@ -56,12 +56,13 @@ int main()
     }
 
     // Vertex data
-    float vertices[6] = 
+    float vertices[] = 
     {
-        -0.5f, -0.5f,
-         0.5f, -0.5f,
-         0.0f, 0.5f,
-    };
+        // positions         // colors
+        0.5f, -0.5f, 0.0f,  1.0f, 0.0f, 0.0f,   // bottom right
+        -0.5f, -0.5f, 0.0f,  0.0f, 1.0f, 0.0f,   // bottom left
+        0.0f,  0.5f, 0.0f,  0.0f, 0.0f, 1.0f    // top 
+    }; 
 
     unsigned int VBO, VAO;
     glGenBuffers(1, &VBO);
@@ -71,8 +72,11 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-    glVertexAttribPointer(0, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
+
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glEnableVertexAttribArray(1);
 
     /* Start creating the vertex shader */
     ShaderProgramSource source = GetShaderSource("./resources/shaders/basic.shader");
