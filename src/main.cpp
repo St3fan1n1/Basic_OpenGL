@@ -93,6 +93,9 @@ int main()
         glClear(GL_COLOR_BUFFER_BIT);
 
         glUseProgram(shader);
+
+        int vertexOffsetUniform =glGetUniformLocation(shader, "triangleOffset");
+        glUniform3f(vertexOffsetUniform, 0.5f, 0.0f, 0.0f);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
