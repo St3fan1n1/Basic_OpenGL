@@ -9,7 +9,7 @@
 
    void main()
    {
-      ourColor = aColor;
+      ourColor = aPos; 
       gl_Position = vec4((aPos.x * -1) + triangleOffset.x, aPos.y * -1, aPos.z * -1, 1.0);
    };
 
