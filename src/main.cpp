@@ -6,6 +6,8 @@
 #include <string>
 #include <sstream>
 
+#include "shader.h"
+
 struct ShaderProgramSource
 {
     std::string VertexSource;
@@ -78,10 +80,12 @@ int main()
     glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    /* Start creating the vertex shader */
-    ShaderProgramSource source = GetShaderSource("./resources/shaders/basic.shader");
+    Shader ourShader("./resources/shaders/shader.vs", "./resources/shaders/shader.fs");
+
+    //ShaderProgramSource source = GetShaderSource("./resources/shaders/basic.shader");
     
-    unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
+    //unsigned int shader = CreateShader(source.VertexSource, source.FragmentSource);
+
 
     /* Main loop */
     while (!glfwWindowShouldClose(window))
@@ -92,10 +96,12 @@ int main()
         glClearColor(0.952f, 0.904f, 0.888f, 1.0f);
         glClear(GL_COLOR_BUFFER_BIT);
 
-        glUseProgram(shader);
+        //glUseProgram(shader);
 
-        int vertexOffsetUniform =glGetUniformLocation(shader, "triangleOffset");
-        glUniform3f(vertexOffsetUniform, 0.5f, 0.0f, 0.0f);
+        ourShader.use();
+
+        //int vertexOffsetUniform =glGetUniformLocation(shader, "triangleOffset");
+        //glUniform3f(vertexOffsetUniform, 0.5f, 0.0f, 0.0f);
         glBindVertexArray(VAO);
         glDrawArrays(GL_TRIANGLES, 0, 3);
 
@@ -107,7 +113,7 @@ int main()
     }
 
     /* Cleanup */
-    glDeleteProgram(shader);
+    //glDeleteProgram(shader);
     glfwTerminate();
 
     return 0;
