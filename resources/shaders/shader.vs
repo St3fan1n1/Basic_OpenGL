@@ -1,13 +1,14 @@
 #version 330 core
 layout (location = 0) in vec3 aPos;
 layout (location = 1) in vec3 aColor;
-
-uniform vec3 triangleOffset;
+layout (location = 2) in vec2 aTexCoord;
 
 out vec3 ourColor;
+out vec2 TexCoord;
 
 void main()
 {
    ourColor = aPos; 
-   gl_Position = vec4((aPos.x * -1) + triangleOffset.x, aPos.y * -1, aPos.z * -1, 1.0);
+   gl_Position = vec4(aPos, 1.0);
+   TexCoord = aTexCoord;
 }
