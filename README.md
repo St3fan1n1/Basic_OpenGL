@@ -1,5 +1,5 @@
 # Basic OpenGL 
-This repository is to document my personal study on OpenGL.
+This repository is to document my personal study on OpenGL. This code follows the learningopengl tutorials.
 
 ## Build and Running (command line)
 
