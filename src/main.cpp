@@ -22,6 +22,10 @@ glm::vec3 cameraPos = glm::vec3(0.0f, 0.0f, 3.0f);
 glm::vec3 cameraFront = glm::vec3(0.0f, 0.0f, -1.0f);
 glm::vec3 cameraUp = glm::vec3(0.0f, 1.0f, 0.0f);
 
+// Frame timing
+float deltaTime = 0.0f;
+float lastFrame = 0.0f;
+
 int main()
 {
     // Initiate GLFW
@@ -31,11 +35,12 @@ int main()
         return -1;
     }
 
-    // Setup and create window
+    // GLFW configuration
     glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
     glfwWindowHint(GLFW_CONTEXT_VERSION_MINOR, 3);
     glfwWindowHint(GLFW_OPENGL_PROFILE, GLFW_OPENGL_CORE_PROFILE);
     
+    // Window creation
     GLFWwindow* window;
     window = glfwCreateWindow(800, 600, "LearnOpenGL", NULL, NULL);
 
@@ -106,6 +111,7 @@ int main()
         -0.5f,  0.5f, -0.5f,  0.0f, 1.0f
     };
 
+    // World space position of all cubes
     glm::vec3 cubePositions[] =
     {
         glm::vec3( 0.0f, 0.0f, 0.0f),
@@ -128,14 +134,17 @@ int main()
     glBindBuffer(GL_ARRAY_BUFFER, VBO);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
     
+    // Position attribute
     glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
+    // Texture attribute
     glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
     Shader ourShader("./resources/shaders/shader.vs", "./resources/shaders/shader.fs");
 
+    // Load and create texture 1
     unsigned int texture1, texture2;
     glGenTextures(1, &texture1);
     glBindTexture(GL_TEXTURE_2D, texture1);
@@ -162,6 +171,7 @@ int main()
 
     stbi_image_free(data);
 
+    // Texture 2
     glGenTextures(1, &texture2);
     glBindTexture(GL_TEXTURE_2D, texture2);
 
@@ -188,9 +198,18 @@ int main()
     ourShader.setInt("texture1", 0);
     ourShader.setInt("texture2", 1);
 
+    // Pass projection matrix. Since it rarely changes, there is no need for it to be sent every frame.
+    glm::mat4 projection = glm::mat4(1.0f);
+    projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
+    ourShader.setMat4("projection", projection);
+
     /* Main loop */
     while (!glfwWindowShouldClose(window))
     {
+        float currentFrame = glfwGetTime();
+        deltaTime = currentFrame - lastFrame;
+        lastFrame = currentFrame;
+
         // Input
         processInput(window);
 
@@ -205,34 +224,23 @@ int main()
 
         ourShader.use();
 
-        // glm::mat4 model = glm::mat4(1.0f);
-        // model = glm::rotate(model, (float)glfwGetTime() * glm::radians(50.0f), glm::vec3(1.0f, 0.5f, 0.0f));
-
         glm::mat4 view = glm::mat4(1.0f);
         view = glm::lookAt(cameraPos,
                            cameraPos + cameraFront,
                            cameraUp);
 
-        glm::mat4 projection = glm::mat4(1.0f);
-        // glm::mat4 proj = glm::perspective(glm::radians(45.0f), (float)width/(float)height, 0.1f, 100.0f);
-        projection = glm::perspective(glm::radians(45.0f), 800.0f / 600.0f, 0.1f, 100.0f);
-
         // This are three ways to pass the transformations to the shaders
         // int modelLoc = glGetUniformLocation(ourShader.ID, "model");
         // glUniformMatrix4fv(modelLoc, 1, GL_FALSE, glm::value_ptr(model));
+        // 
+        // glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
+        // 
+        // ourShader.setMat4("projection", projection);
 
         int viewLoc = glGetUniformLocation(ourShader.ID, "view");
         glUniformMatrix4fv(viewLoc, 1, GL_FALSE, &view[0][0]);
 
-        int projectionLoc = glGetUniformLocation(ourShader.ID, "projection");
-        ourShader.setMat4("projection", projection);
-
-        // glm::mat4 trans = glm::mat4(1.0f);
-        // trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0, 1.0, 1.0));
-
-        // unsigned int transformLoc = glGetUniformLocation(ourShader.ID, "transform");
-        // glUniformMatrix4fv(transformLoc, 1, GL_FALSE, glm::value_ptr(trans));
-
+        // Draw call for all 10 cubes
         glBindVertexArray(VAO);
         for (unsigned int i = 0; i < 10; i++)
         {
@@ -244,8 +252,6 @@ int main()
 
             glDrawArrays(GL_TRIANGLES, 0, 36);
         }
-        // glDrawArrays(GL_TRIANGLES, 0, 36);
-        // glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
         glBindVertexArray(0);
 
@@ -254,10 +260,9 @@ int main()
         glfwPollEvents();
     }
 
+    /* Cleanup */
     glDeleteVertexArrays(1, &VAO);
     glDeleteBuffers(1, &VBO);
-
-    /* Cleanup */
     glfwTerminate();
 
     return 0;
@@ -270,7 +275,7 @@ void framebuffer_size_callback(GLFWwindow* window, int width, int height)
 
 void processInput(GLFWwindow *window)
 {
-    const float cameraSpeed = 0.05f;
+    const float cameraSpeed = 2.5f * deltaTime;
     if (glfwGetKey(window, GLFW_KEY_W) == GLFW_PRESS)
         cameraPos += cameraSpeed * cameraFront;
     if (glfwGetKey(window, GLFW_KEY_S) == GLFW_PRESS)
